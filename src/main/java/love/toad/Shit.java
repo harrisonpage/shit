@@ -39,9 +39,13 @@ import org.bukkit.Particle;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
+
+    // player => time of last shit in seconds since epoch
     public final HashMap<UUID, Long> shits = new HashMap<>();
+
+    // <deuce> BROWN
     public static final Color BROWN = Color.fromRGB(0xD2691E);
-    public static final int PISS_DELAY = 20;
+
 
     @Override
     public void onEnable() {
@@ -56,6 +60,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         log.info("[Shit] Disabled");
     }
 
+    // restart the shit collector thread
     public void rescheduleShitCollector() {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(this, new ShitCollector(this), ShitConfig.SCHEDULER_DELAY);
@@ -73,22 +78,31 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         }
 
         if (! player.isOnline()) {
-            // not sure how this happened
+            // not sure how this could happen but whatever
             return;
         }
 
+        // take a shit
         ItemStack is = new ItemStack(Material.BROWN_DYE);
         ItemMeta newMetaName = is.getItemMeta();
         newMetaName.setDisplayName("shit");
         is.setItemMeta(newMetaName);
 
+        // leave a shit
         Location spawnSpot = player.getLocation().add(player.getLocation().getDirection().multiply(-2.5));
         player.getWorld().dropItem(spawnSpot, is);
 
+        // fling poo
         player.setVelocity(new Vector(0, 0.4, 0).multiply(1D));
+
+        // behind player
         World world = player.getWorld();
         Location fireworksSpot = player.getLocation().add(player.getLocation().getDirection().multiply(-5));
+
+        // hee haw
         world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
+
+        // we have explosive
         if (explosive) {
             world.createExplosion(player.getLocation(), 0);
 
@@ -103,9 +117,11 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
             Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
         }
 
+        // update time of last shit
         shits.put(player.getUniqueId(), ShitUtils.getSecondsSinceEpoch());
     }
 
+    // shit when player crouches
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
@@ -116,12 +132,13 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         }
     }
 
+    // reset last shit time on join
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // reset shit on join
         shits.put(event.getPlayer().getUniqueId(), ShitUtils.getSecondsSinceEpoch());
     }
 
+    // eat shit
     @EventHandler
     public void onRightClick(PlayerInteractEvent e)
     {
@@ -139,20 +156,19 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         }
     }
 
+    // handle /shit and /piss
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("piss")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 Location location = player.getLocation().add(player.getLocation().getDirection().multiply(2));
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0.2, 2, 0.2);
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0.3, 2, 0.3);
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
-
-
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, ShitConfig.PISS_DELAY, 0.2, 2, 0.2);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, ShitConfig.PISS_DELAY, 0D, 0D, 0D);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, ShitConfig.PISS_DELAY, 0D, 0D, 0D);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, ShitConfig.PISS_DELAY, 0D, 0D, 0D);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, ShitConfig.PISS_DELAY, 0.3, 2, 0.3);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, ShitConfig.PISS_DELAY, 0D, 0D, 0D);
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_HONEY_BLOCK_SLIDE, 5.0F, 1.0F);
             }
         } else if (label.equalsIgnoreCase("shit")) {
