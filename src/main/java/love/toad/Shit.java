@@ -110,7 +110,9 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         if (!player.isSneaking()) {
-            this.shit(player, false);
+            if (ShitUtils.getSecondsSinceEpoch() - shits.get(player.getUniqueId()) > ShitConfig.THRESHOLD) {
+                this.shit(player, false);
+            }
         }
     }
 
