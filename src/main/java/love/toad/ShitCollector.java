@@ -47,7 +47,7 @@ public class ShitCollector implements Runnable {
                 delta = now - lastShit;
                 log.info(String.format("Retrieved %d (%d) for %s", lastShit, delta, name));
                 if (delta > ShitConfig.DIARRHEA) {
-                    this.plugin.shit(p);
+                    this.plugin.shit(p, true);
                     p.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of(ShitConfig.SHIT_COLOR) + " You have shit yourself"));
                     Bukkit.broadcastMessage(String.format("%s shit himself", p.getName()));
                     this.plugin.shits.put(uuid, now);

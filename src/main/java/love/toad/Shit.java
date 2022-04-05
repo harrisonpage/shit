@@ -54,7 +54,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         scheduler.scheduleSyncDelayedTask(this, new ShitCollector(this), ShitConfig.SCHEDULER_DELAY);
     }
 
-    public void shit(Player player) {
+    public void shit(Player player, boolean explosive) {
         if (ShitUtils.isPlayerInWater(player)) {
             log.info(String.format("%s is in water, cannot shit", player.getName()));
             return;
@@ -68,23 +68,27 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         Location spawnSpot = player.getLocation().add(player.getLocation().getDirection().multiply(-2.5));
         player.getWorld().dropItem(spawnSpot, is);
 
-        // explosive shit
         player.setVelocity(new Vector(0, 0.4, 0).multiply(1D));
         World world = player.getWorld();
-        world.createExplosion(player.getLocation(), 0);
-
         Location fireworksSpot = player.getLocation().add(player.getLocation().getDirection().multiply(-5));
-
-        Firework firework = (Firework) world.spawnEntity(fireworksSpot, EntityType.FIREWORK);
-        FireworkMeta fireworkMeta = firework.getFireworkMeta();
-        fireworkMeta.setPower(0);
-        fireworkMeta.addEffect(FireworkEffect.builder()
-                .withColor(BROWN, BROWN)
-                .flicker(true)
-                .build());
-        firework.setFireworkMeta(fireworkMeta);
         world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
+
+        if (explosive) {
+            world.createExplosion(player.getLocation(), 0);
+
+
+
+            Firework firework = (Firework) world.spawnEntity(fireworksSpot, EntityType.FIREWORK);
+            FireworkMeta fireworkMeta = firework.getFireworkMeta();
+            fireworkMeta.setPower(0);
+            fireworkMeta.addEffect(FireworkEffect.builder()
+                    .withColor(BROWN, BROWN)
+                    .flicker(true)
+                    .build());
+            firework.setFireworkMeta(fireworkMeta);
+            world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
+        }
 
         shits.put(player.getUniqueId(), ShitUtils.getSecondsSinceEpoch());
     }
@@ -93,7 +97,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         if (!player.isSneaking()) {
-            this.shit(player);
+            this.shit(player, false);
         }
     }
 
@@ -108,9 +112,14 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         if (label.equalsIgnoreCase("shit")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                if (args.length == 1 && args[0].equalsIgnoreCase("now")) {
-                    this.shit(player);
-                    return true;
+                if (args.length == 1) {
+                    if (args[0].equalsIgnoreCase("now")) {
+                        this.shit(player, false);
+                        return true;
+                    } else if (args[0].equalsIgnoreCase("explosive")) {
+                        this.shit(player, true);
+                        return true;
+                    }
                 }
                 long lastShit = shits.get(player.getUniqueId());
                 long delta = ShitUtils.getSecondsSinceEpoch() - lastShit;
