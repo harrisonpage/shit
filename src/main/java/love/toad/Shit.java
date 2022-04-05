@@ -147,11 +147,11 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                 player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
                 player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
                 player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
-                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0.3, 2, 0.3)
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0.3, 2, 0.3);
                 player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
 
 
-                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT​, 5.0F, 1.0F);
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_HONEY_BLOCK_SLIDE, 5.0F, 1.0F);
             }
         } else if (label.equalsIgnoreCase("shit")) {
             if (sender instanceof Player) {
