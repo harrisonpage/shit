@@ -22,20 +22,32 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import java.util.logging.Logger;
+import org.bukkit.scheduler.BukkitScheduler;
+import java.util.HashMap;
+import java.util.UUID;
+import love.toad.ShitCollector;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
+    public final HashMap<UUID, Long> shits = new HashMap<>();
     public static final Color BROWN = Color.fromRGB(0xD2691E);
+    private final int SCHEDULER_DELAY = 100;
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("shit").setExecutor(this);
         log.info("[Shit] Enabled");
+        this.rescheduleShitCollector();
     }
 
     @Override
     public void onDisable() {
+    }
+
+    public void rescheduleShitCollector() {
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.scheduleSyncDelayedTask(this, new ShitCollector(this), SCHEDULER_DELAY);
     }
 
     private void shit(Player player) {
