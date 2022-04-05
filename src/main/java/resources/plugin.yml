@@ -8,3 +8,6 @@ commands:
    shit:
       description: Shit
       usage: /shit
+   piss:
+      description: Piss
+      usage: /piss

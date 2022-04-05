@@ -35,11 +35,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import love.toad.ShitUtils;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.Particle;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
     public final HashMap<UUID, Long> shits = new HashMap<>();
     public static final Color BROWN = Color.fromRGB(0xD2691E);
+    public static final int PISS_DELAY = 20;
 
     @Override
     public void onEnable() {
@@ -89,8 +91,6 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                     .build());
             firework.setFireworkMeta(fireworkMeta);
             Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
-
-            world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
         }
 
         shits.put(player.getUniqueId(), ShitUtils.getSecondsSinceEpoch());
@@ -129,7 +129,21 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("shit")) {
+        if (label.equalsIgnoreCase("piss")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                Location location = player.getLocation().add(player.getLocation().getDirection().multiply(2));
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0.2, 2, 0.2);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0.3, 2, 0.3)
+                player.getWorld().spawnParticle(Particle.FALLING_HONEY, location, PISS_DELAY, 0D, 0D, 0D);
+
+
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_WATER_AMBIENT​, 5.0F, 1.0F);
+            }
+        } else if (label.equalsIgnoreCase("shit")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (args.length == 1) {
