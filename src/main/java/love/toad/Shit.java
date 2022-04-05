@@ -18,6 +18,9 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.FireworkEffect;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
@@ -30,6 +33,8 @@ import love.toad.ShitConfig;
 import java.time.Instant;
 import org.bukkit.event.player.PlayerJoinEvent;
 import love.toad.ShitUtils;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
@@ -72,11 +77,8 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         World world = player.getWorld();
         Location fireworksSpot = player.getLocation().add(player.getLocation().getDirection().multiply(-5));
         world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
-
         if (explosive) {
             world.createExplosion(player.getLocation(), 0);
-
-
 
             Firework firework = (Firework) world.spawnEntity(fireworksSpot, EntityType.FIREWORK);
             FireworkMeta fireworkMeta = firework.getFireworkMeta();
@@ -86,8 +88,9 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                     .flicker(true)
                     .build());
             firework.setFireworkMeta(fireworkMeta);
-            world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
             Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
+
+            world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
         }
 
         shits.put(player.getUniqueId(), ShitUtils.getSecondsSinceEpoch());
@@ -106,6 +109,25 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         // reset shit on join
         shits.put(event.getPlayer().getUniqueId(), ShitUtils.getSecondsSinceEpoch());
     }
+
+    @EventHandler
+    public void onRightClick(PlayerInteractEvent e)
+    {
+        Player p = e.getPlayer();
+        ItemStack itemInMainHand = p.getInventory().getItemInMainHand();
+
+        //if player right clicked w/main hand
+        if((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && e.getHand() == EquipmentSlot.HAND)
+        {
+            if(itemInMainHand.getType() == Material.BROWN_DYE) {
+                log.info(String.format("%s ate his own shit", p.getName()));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60*20, 2, true, true)); // 20 ticks a second for 60 seconds
+                itemInMainHand.setAmount(itemInMainHand.getAmount()-1);
+                p.getWorld().playSound(p.getLocation(), Sound.ENTITY_GOAT_EAT, 1.0F, 1.0F);
+            }
+        }
+    }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
