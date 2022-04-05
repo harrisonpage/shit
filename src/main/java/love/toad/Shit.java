@@ -28,6 +28,8 @@ import java.util.UUID;
 import love.toad.ShitCollector;
 import love.toad.ShitConfig;
 import java.time.Instant;
+import org.bukkit.event.player.PlayerJoinEvent;
+import love.toad.ShitUtils;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
@@ -52,7 +54,12 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         scheduler.scheduleSyncDelayedTask(this, new ShitCollector(this), ShitConfig.SCHEDULER_DELAY);
     }
 
-    private void shit(Player player) {
+    public void shit(Player player) {
+        if (ShitUtils.isPlayerInWater(player)) {
+            log.info(String.format("%s is in water, cannot shit", player.getName()));
+            return;
+        }
+
         ItemStack is = new ItemStack(Material.BROWN_DYE);
         ItemMeta newMetaName = is.getItemMeta();
         newMetaName.setDisplayName("shit");
@@ -88,6 +95,12 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         if (!player.isSneaking()) {
             this.shit(player);
         }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        // reset shit on join
+        shits.put(event.getPlayer().getUniqueId(), Instant.now().toEpochMilli() / 1000);
     }
 
     @Override
