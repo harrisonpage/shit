@@ -30,12 +30,12 @@ public class ShitCollector implements Runnable {
         for(Player p : Bukkit.getOnlinePlayers()) {
             // players do not have to shit in the nether
             if (p.getWorld().getEnvironment().equals(World.Environment.NETHER)) {
-                log.info(String.format("%s can't shit in the nether", p.getName()));
+                //log.info(String.format("%s can't shit in the nether", p.getName()));
                 continue;
             }
 
             if (ShitUtils.isPlayerInWater(p)) {
-                log.info(String.format("%s is in water, cannot shit", p.getName()));
+                //log.info(String.format("%s is in water, cannot shit", p.getName()));
                 continue;
             }
 

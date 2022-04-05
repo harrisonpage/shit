@@ -116,18 +116,16 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         Player p = e.getPlayer();
         ItemStack itemInMainHand = p.getInventory().getItemInMainHand();
 
-        //if player right clicked w/main hand
         if((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && e.getHand() == EquipmentSlot.HAND)
         {
             if(itemInMainHand.getType() == Material.BROWN_DYE) {
-                log.info(String.format("%s ate his own shit", p.getName()));
+                Bukkit.broadcastMessage(String.format("%s ate his own shit", p.getName()));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60*20, 2, true, true)); // 20 ticks a second for 60 seconds
                 itemInMainHand.setAmount(itemInMainHand.getAmount()-1);
                 p.getWorld().playSound(p.getLocation(), Sound.ENTITY_GOAT_EAT, 1.0F, 1.0F);
             }
         }
     }
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -157,9 +155,6 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
             sender.sendMessage("Not a console command");
             return false;
         }
-
         return true;
     }
-
-
 }
