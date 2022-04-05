@@ -86,7 +86,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
 
-        shits.put(player.getUniqueId(), Instant.now().toEpochMilli() / 1000);
+        shits.put(player.getUniqueId(), ShitUtils.getSecondsSinceEpoch());
     }
 
     @EventHandler
@@ -100,7 +100,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         // reset shit on join
-        shits.put(event.getPlayer().getUniqueId(), Instant.now().toEpochMilli() / 1000);
+        shits.put(event.getPlayer().getUniqueId(), ShitUtils.getSecondsSinceEpoch());
     }
 
     @Override
@@ -110,9 +110,10 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                 Player player = (Player) sender;
                 if (args.length == 1 && args[0].equalsIgnoreCase("now")) {
                     this.shit(player);
+                    return true;
                 }
                 long lastShit = shits.get(player.getUniqueId());
-                long delta = (Instant.now().toEpochMilli() / 1000) - lastShit;
+                long delta = ShitUtils.getSecondsSinceEpoch() - lastShit;
                 player.sendMessage(String.format("Last shit was %d seconds ago", delta));
             }
         } else {

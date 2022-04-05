@@ -21,7 +21,7 @@ public class ShitCollector implements Runnable {
     }
 
     public void run() {
-        long now = Instant.now().toEpochMilli() / 1000;
+        long now = ShitUtils.getSecondsSinceEpoch();
         long lastShit;
         UUID uuid;
         String name;
