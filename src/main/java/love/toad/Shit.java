@@ -1,21 +1,31 @@
 package love.toad;
 
+import org.bukkit.*; // sigh
+import org.bukkit.Color;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.EventHandler;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.FireworkEffect;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import java.util.logging.Logger;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
+    public static final Color BROWN = Color.fromRGB(0xD2691E);
 
     @Override
     public void onEnable() {
@@ -28,7 +38,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     public void onDisable() {
     }
 
-    private shit(Player player) {
+    private void shit(Player player) {
         ItemStack is = new ItemStack(Material.BROWN_DYE);
         ItemMeta newMetaName = is.getItemMeta();
         newMetaName.setDisplayName("shit");
@@ -39,8 +49,23 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
 
         // explosive shit
         player.setVelocity(new Vector(0, 0.4, 0).multiply(1D));
-        World w = player.getWorld();
-        w.createExplosion(player.getLocation(), 0);
+        World world = player.getWorld();
+        world.createExplosion(player.getLocation(), 0);
+
+        Location fireworksSpot = player.getLocation().add(player.getLocation().getDirection().multiply(-5));
+
+        Firework firework = (Firework) world.spawnEntity(fireworksSpot, EntityType.FIREWORK);
+        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        fireworkMeta.setPower(0);
+        fireworkMeta.addEffect(FireworkEffect.builder()
+                .withColor(BROWN, BROWN)
+                .flicker(true)
+                .build());
+        firework.setFireworkMeta(fireworkMeta);
+        world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
+
     }
 
     @EventHandler
@@ -50,7 +75,6 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
             this.shit(player);
         }
     }
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
