@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 import java.util.UUID;
 import love.toad.Shit;
 import love.toad.ShitConfig;
-import org.bukkit.ChatColor;
+//import org.bukkit.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.ChatColor;
 
 public class ShitCollector implements Runnable {
     private final Shit plugin;
@@ -37,7 +39,9 @@ public class ShitCollector implements Runnable {
                 delta = now - lastShit;
                 log.info(String.format("Retrieved %d (%d) for %s", lastShit, delta, name));
                 if (delta > ShitConfig.THRESHOLD) {
-                    p.sendMessage(ChatColor.DARK_RED + "You need to take a shit");
+                    p.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of("#D2691E") + " You need to shit"));
+
+                    // p.sendMessage(ChatColor.DARK_RED + "");
                 }
             } else {
                 log.info(String.format("Stored %d for %s", now, name));
