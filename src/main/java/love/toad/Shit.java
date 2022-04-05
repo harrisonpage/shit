@@ -119,6 +119,12 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                     } else if (args[0].equalsIgnoreCase("explosive")) {
                         this.shit(player, true);
                         return true;
+                    } else if (args[0].equalsIgnoreCase("players")) {
+                        for(Player p : Bukkit.getOnlinePlayers()) {
+                            player.sendMessage(String.format("%s last shit %d seconds ago",
+                                p.getName(), ShitUtils.getSecondsSinceEpoch() - shits.get(player.getUniqueId())));
+                        }
+                        return true;
                     }
                 }
                 long lastShit = shits.get(player.getUniqueId());
