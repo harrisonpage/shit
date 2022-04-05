@@ -3,4 +3,5 @@ package love.toad;
 public class ShitConfig {
     public static final int SCHEDULER_DELAY = 100;
     public static final int THRESHOLD = 60;
+    public static final String SHIT_COLOR = "#D2691E";
 }
