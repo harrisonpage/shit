@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import java.util.logging.Logger;
 import java.util.UUID;
 import love.toad.Shit;
+import love.toad.ShitConfig;
+import org.bukkit.ChatColor;
 
 public class ShitCollector implements Runnable {
     private final Shit plugin;
@@ -22,7 +24,6 @@ public class ShitCollector implements Runnable {
         String name;
         long delta;
 
-        Bukkit.broadcastMessage("RUNNING SHIT COLLECTOR");
         for(Player p : Bukkit.getOnlinePlayers()) {
             name = p.getName();
             uuid = p.getUniqueId();
@@ -31,11 +32,13 @@ public class ShitCollector implements Runnable {
                 lastShit = this.plugin.shits.get(uuid);
                 delta = now - lastShit;
                 log.info(String.format("Retrieved %d (%d) for %s", lastShit, delta, name));
+                if (delta > ShitConfig.THRESHOLD) {
+                    p.sendMessage(ChatColor.DARK_RED + "You need to take a shit");
+                }
             } else {
                 log.info(String.format("Stored %d for %s", now, name));
                 this.plugin.shits.put(uuid, now);
             }
-            log.info(p.getName());
         }
         this.plugin.rescheduleShitCollector();
     }

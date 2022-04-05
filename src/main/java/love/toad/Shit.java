@@ -26,12 +26,13 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.util.HashMap;
 import java.util.UUID;
 import love.toad.ShitCollector;
+import love.toad.ShitConfig;
+import java.time.Instant;
 
 public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     Logger log = Logger.getLogger("Minecraft");
     public final HashMap<UUID, Long> shits = new HashMap<>();
     public static final Color BROWN = Color.fromRGB(0xD2691E);
-    private final int SCHEDULER_DELAY = 100;
 
     @Override
     public void onEnable() {
@@ -43,11 +44,12 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
 
     @Override
     public void onDisable() {
+        log.info("[Shit] Disabled");
     }
 
     public void rescheduleShitCollector() {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(this, new ShitCollector(this), SCHEDULER_DELAY);
+        scheduler.scheduleSyncDelayedTask(this, new ShitCollector(this), ShitConfig.SCHEDULER_DELAY);
     }
 
     private void shit(Player player) {
@@ -75,9 +77,9 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                 .build());
         firework.setFireworkMeta(fireworkMeta);
         world.playSound(fireworksSpot, Sound.ENTITY_DONKEY_DEATH, 1.0F, 1.0F);
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, firework::detonate, 1);
 
+        shits.put(player.getUniqueId(), Instant.now().toEpochMilli() / 1000);
     }
 
     @EventHandler
@@ -93,7 +95,12 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         if (label.equalsIgnoreCase("shit")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                this.shit(player);
+                if (args.length == 1 && args[0].equalsIgnoreCase("now")) {
+                    this.shit(player);
+                }
+                long lastShit = shits.get(player.getUniqueId());
+                long delta = (Instant.now().toEpochMilli() / 1000) - lastShit;
+                player.sendMessage(String.format("Last shit was %d seconds ago", delta));
             }
         } else {
             sender.sendMessage("Not a console command");
