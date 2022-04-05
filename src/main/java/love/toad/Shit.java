@@ -67,6 +67,16 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
             return;
         }
 
+        if (player.isDead()) {
+            log.info(String.format("%s is dead, cannot shit", player.getName()));
+            return;
+        }
+
+        if (! player.isOnline()) {
+            // not sure how this happened
+            return;
+        }
+
         ItemStack is = new ItemStack(Material.BROWN_DYE);
         ItemMeta newMetaName = is.getItemMeta();
         newMetaName.setDisplayName("shit");
