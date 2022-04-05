@@ -25,6 +25,10 @@ public class ShitCollector implements Runnable {
         long delta;
 
         for(Player p : Bukkit.getOnlinePlayers()) {
+            // players do not have to shit in the nether
+            if (p.getWorld().getEnvironment().equals(World.Environment.NETHER)) {
+                continue;
+            }
             name = p.getName();
             uuid = p.getUniqueId();
 
