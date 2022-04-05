@@ -1,0 +1,10 @@
+name: Lodestar
+version: 1.0.0
+author: pants
+main: love.toad.Shit
+api-version: 1.18
+description: Shit
+commands:
+   shit:
+      description: Shit
+      usage: /shit
