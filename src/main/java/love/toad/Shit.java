@@ -45,6 +45,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
 
     // player => time of last shit in seconds since epoch
     public final HashMap<UUID, Long> shits = new HashMap<>();
+    public final HashMap<UUID, Integer> numShits = new HashMap<>();
 
     // <deuce> BROWN
     public static final Color BROWN = Color.fromRGB(0xD2691E);
@@ -63,10 +64,15 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
     }
 
     public void shit(Player player, boolean explosive) {
+        int shitCount = numShits.get(player.getUniqueId());
         long lastShit = shits.get(player.getUniqueId());
         long delta = ShitUtils.getSecondsSinceEpoch() - lastShit;
         if (delta < ShitConfig.THRESHOLD) {
-            player.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of(ShitConfig.SHIT_COLOR) + "You just took a shit, wait a while"));
+            if (shitCount == 0) {
+                player.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of(ShitConfig.SHIT_COLOR) + "You don't have to go"));
+            } else {
+                player.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of(ShitConfig.SHIT_COLOR) + "You just took a shit, wait a while"));
+            }
             return;
         }
 
@@ -118,12 +124,14 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
 
         // update time of last shit
         shits.put(player.getUniqueId(), ShitUtils.getSecondsSinceEpoch());
+        numShits.put(player.getUniqueId(), 1 + numShits.get(player.getUniqueId()));
     }
 
     // reset last shit time on join
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         shits.put(event.getPlayer().getUniqueId(), ShitUtils.getSecondsSinceEpoch());
+        numShits.put(event.getPlayer().getUniqueId(), 0);
     }
 
     // eat shit
@@ -158,8 +166,10 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
                         return true;
                     } else if (args[0].equalsIgnoreCase("players")) {
                         for(Player p : Bukkit.getOnlinePlayers()) {
-                            player.sendMessage(String.format("%s last shit %d seconds ago",
-                                p.getName(), ShitUtils.getSecondsSinceEpoch() - shits.get(player.getUniqueId())));
+                            player.sendMessage(String.format("%s has shit %d times (last shit %d seconds ago)",
+                                p.getName(), 
+                                numShits.get(player.getUniqueId()),
+                                ShitUtils.getSecondsSinceEpoch() - shits.get(player.getUniqueId())));
                         }
                         return true;
                     } else {
