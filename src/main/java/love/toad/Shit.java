@@ -70,11 +70,6 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
             return;
         }
 
-        if (ShitUtils.isPlayerInWater(player)) {
-            player.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of(ShitConfig.SHIT_COLOR) + "Can't shit in the water"));
-            return;
-        }
-
         if (player.isDead()) {
             // not sure how this could happen but whatever
             return;
@@ -88,7 +83,7 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
         // take a shit
         ItemStack is = new ItemStack(Material.BROWN_DYE);
         ItemMeta newMetaName = is.getItemMeta();
-        String s = player.getName().substring(player.getName().length() - 1) == "s" ? "" : "s";
+        String s = player.getName().substring(player.getName().length() - 1).equals("s") ? "" : "s";
         newMetaName.setDisplayName(String.format("%s'%s shit", player.getName(), s));
         is.setItemMeta(newMetaName);
 
