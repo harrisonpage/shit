@@ -1,10 +1,20 @@
 name: Shit
-version: 1.0.0
+version: 1.0.1
 author: pants
 main: love.toad.Shit
 api-version: 1.18
 description: Shit
 commands:
-   shit:
-      description: Shit
-      usage: /shit
+ shit:
+  description: Shit
+  usage: /shit
+permissions:
+ shit.shit:
+  description: Can you even shit
+  default: true
+ shit.explosive:
+  description: Explosive diarrhea
+  default: true
+ shit.list:
+  description: See who shits
+  default: op

@@ -159,19 +159,31 @@ public class Shit extends JavaPlugin implements Listener, CommandExecutor {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (args.length == 0) {
-                    this.shit(player, false);
+                    if (player.hasPermission("shit.shit")) {
+                        this.shit(player, false);
+                    } else {
+                        player.sendMessage("You don't have permission to shit, you little worm");
+                    }
                 } else if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("explosive")) {
-                        this.shit(player, true);
-                        return true;
-                    } else if (args[0].equalsIgnoreCase("players")) {
-                        for(Player p : Bukkit.getOnlinePlayers()) {
-                            player.sendMessage(String.format("%s has shit %d times (last shit %d seconds ago)",
-                                p.getName(), 
-                                numShits.get(player.getUniqueId()),
-                                ShitUtils.getSecondsSinceEpoch() - shits.get(player.getUniqueId())));
+                        if (player.hasPermission("shit.explosive")) {
+                            this.shit(player, true);
+                            return true;
+                        } else {
+                            player.sendMessage("You don't have the 'explosive diarrhea' permission");
                         }
-                        return true;
+                    } else if (args[0].equalsIgnoreCase("players")) {
+                        if (player.hasPermission("shit.list")) {
+                            for(Player p : Bukkit.getOnlinePlayers()) {
+                                player.sendMessage(String.format("%s has shit %d times (last shit %d seconds ago)",
+                                    p.getName(), 
+                                    numShits.get(player.getUniqueId()),
+                                    ShitUtils.getSecondsSinceEpoch() - shits.get(player.getUniqueId())));
+                            }
+                            return true;
+                        } else {
+                            player.sendMessage("You're not on the shit list, friendo");
+                        }
                     } else {
                         player.spigot().sendMessage(TextComponent.fromLegacyText(ChatColor.of(ShitConfig.SHIT_COLOR) + HELP_MESSAGE));
                     }
